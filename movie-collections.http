@@ -1,8 +1,9 @@
-@baseUrl = 127.0.0.1:8000/
-
-
-GET http://{{{baseUrl}}}/version
+@baseUrl = 127.0.0.1:8000
 
 ###
 
-GET http://{{{baseUrl}}}
+GET http://{{baseUrl}}
+
+###
+
+GET http://{{baseUrl}}/version
