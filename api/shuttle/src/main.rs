@@ -4,12 +4,15 @@ use axum::{extract::State, response::IntoResponse, routing::get, Router};
 use shuttle_runtime::CustomError;
 use sqlx::Executor;
 
+use tracing_subscriber::util::SubscriberInitExt;
+
 async fn hello_world() -> &'static str {
     "Hello, world!"
 }
 
 #[axum::debug_handler(state =Arc<sqlx::PgPool> )]
 async fn version(State(db): State<Arc<sqlx::PgPool>>) -> impl IntoResponse {
+    tracing::info!("Getting version");
     let version: Result<String, sqlx::Error> = sqlx::query_scalar("select version()")
         .fetch_one(db.as_ref())
         .await;

@@ -61,7 +61,7 @@
 			"type": "cargo",
 			"command": "shuttle",
 			"args": [
-				"deploy"
+				"deploy","--allow-dirty"
 			],
 			"problemMatcher": [
 				"$rustc"
