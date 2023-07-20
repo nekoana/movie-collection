@@ -1,0 +1,78 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cargo",
+			"command": "fmt",
+			"label": "rust: cargo fmt",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false ,
+				"close": true
+			}
+		},
+		{
+			"type": "cargo",
+			"command": "clippy",
+			"label": "rust: cargo clippy",
+		},
+		{
+			"type": "cargo",
+			"command": "fix",
+			"args": [
+				"--allow-dirty"
+			],
+			"label": "rust: cargo fix",
+		},
+		{
+			"type": "cargo",
+			"command": "build",
+			"problemMatcher": [
+				"$rustc"
+			],
+			"label": "rust: cargo build",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"rust: cargo fmt",
+				"rust: cargo clippy",
+				"rust: cargo fix",
+			],
+		},
+		{
+			"type": "cargo",
+			"command": "shuttle",
+			"args": [
+				"run"
+			],
+			"problemMatcher": [
+				"$rustc"
+			],
+			"label": "rust: cargo shuttle run",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"rust: cargo build",
+			],
+		},
+		{
+			"type": "cargo",
+			"command": "shuttle",
+			"args": [
+				"deploy"
+			],
+			"problemMatcher": [
+				"$rustc"
+			],
+			"label": "rust: cargo shuttle deploy",
+		},
+		{
+			"type": "cargo",
+			"command": "watch",
+			"args": ["-x","shuttle run"],
+			"label": "rust:cargo watch"
+		}
+	]
+}
