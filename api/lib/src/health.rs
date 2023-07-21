@@ -38,3 +38,44 @@ pub async fn health() -> (HeaderMap, &'static str) {
 pub fn health_router() -> Router {
     Router::new().route("/health", get(health))
 }
+
+#[cfg(test)]
+mod test {
+    use axum::{
+        body::Body,
+        http::{Request, StatusCode},
+    };
+    use tower::ServiceExt;
+
+    #[tokio::test]
+    async fn test_header_version() {
+        let (headers, _) = super::health().await;
+
+        let version = headers.get("Version");
+        assert_eq!(version.unwrap(), "V0.0.1");
+    }
+    #[tokio::test]
+    async fn test_health_work() {
+        let router = super::health_router();
+
+        let response = router
+            .oneshot(
+                Request::builder()
+                    .uri("/health")
+                    .body(Body::empty())
+                    .expect("Could not create request"),
+            )
+            .await
+            .expect("Could not get response");
+
+        assert_eq!(response.status(), StatusCode::OK);
+
+        let body = response.into_body();
+
+        let body = hyper::body::to_bytes(body)
+            .await
+            .expect("Could not get bytes");
+
+        assert_eq!(&body[..], b"OK");
+    }
+}
