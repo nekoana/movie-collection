@@ -7,3 +7,7 @@ GET http://{{baseUrl}}
 ###
 
 GET http://{{baseUrl}}/version
+
+###
+
+GET http://{{baseUrl}}/health

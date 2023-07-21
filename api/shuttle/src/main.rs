@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use api_lib::health::{hello_world, version};
+use api_lib::health::{health, hello_world, version};
 use axum::{routing::get, Router};
 use shuttle_runtime::CustomError;
 use sqlx::Executor;
@@ -21,7 +21,8 @@ async fn axum(
     let router = Router::new()
         .route("/", get(hello_world))
         .route("/version", get(version))
-        .with_state(db.clone());
+        .with_state(db.clone())
+        .route("/health", get(health));
 
     Ok(router.into())
 }

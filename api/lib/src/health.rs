@@ -18,3 +18,7 @@ pub async fn version(State(db): State<Arc<sqlx::PgPool>>) -> impl IntoResponse {
         Err(e) => format!("Error: {:?}", e),
     }
 }
+
+pub async fn health() -> &'static str {
+    "V0.0.1"
+}
