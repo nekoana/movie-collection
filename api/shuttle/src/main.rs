@@ -1,12 +1,15 @@
-use std::sync::Arc;
+use axum::{Router, routing::get};
+use axum::extract::State;
+use shuttle_runtime::CustomError;
+use sqlx::Executor;
+use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::util::SubscriberInitExt;
 
 use api_lib::{
     films::films_routers,
     health::{health_router, hello_world, version},
 };
-use axum::{routing::get, Router};
-use shuttle_runtime::CustomError;
-use sqlx::Executor;
+use api_lib::postgres_film_repository::PostgresFilmRepository;
 
 #[shuttle_runtime::main]
 async fn axum(
@@ -19,14 +22,14 @@ async fn axum(
         .await
         .map_err(CustomError::new)?;
 
-    let db = Arc::new(pool);
+    let film_repository = State(PostgresFilmRepository::new(pool.clone()));
 
     let router = Router::new()
         .route("/", get(hello_world))
         .route("/version", get(version))
-        .with_state(db.clone())
+        .with_state(pool.clone())
         .nest("/", health_router())
-        .nest("/", films_routers());
+        .nest("/", films_routers(film_repository));
 
     Ok(router.into())
 }

@@ -1,23 +1,22 @@
-use std::{str::FromStr, sync::Arc};
+use std::str::FromStr;
 
 use axum::{
     extract::State,
     http::{HeaderMap, HeaderName, HeaderValue},
     response::IntoResponse,
-    routing::get,
     Router,
+    routing::get,
 };
 
 pub async fn hello_world() -> &'static str {
     "Hello, world!"
 }
 
-#[axum::debug_handler(state =Arc<sqlx::PgPool> )]
-pub async fn version(State(db): State<Arc<sqlx::PgPool>>) -> impl IntoResponse {
+#[axum::debug_handler(state = sqlx::PgPool)]
+pub async fn version(State(db): State<sqlx::PgPool>) -> impl IntoResponse {
     tracing::info!("Getting version");
-    let version: Result<String, sqlx::Error> = sqlx::query_scalar("select version()")
-        .fetch_one(db.as_ref())
-        .await;
+    let version: Result<String, sqlx::Error> =
+        sqlx::query_scalar("select version()").fetch_one(&db).await;
 
     match version {
         Ok(version) => version,
