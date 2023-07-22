@@ -4,7 +4,7 @@ use axum::{
     routing::{delete, get, post, put},
     Json, Router,
 };
-use hyper::{StatusCode};
+use hyper::StatusCode;
 use tracing::info;
 
 // GET /v1/films: returns a list of films.
