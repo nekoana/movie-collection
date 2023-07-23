@@ -1,12 +1,12 @@
 use std::sync::Arc;
 
-use axum::{
-    Extension,
-    extract::Path,
-    Json,
-    response::IntoResponse, Router, routing::{delete, get, post, put},
-};
 use axum::extract::State;
+use axum::{
+    extract::Path,
+    response::IntoResponse,
+    routing::{delete, get, post, put},
+    Extension, Json, Router,
+};
 
 use shared::film_model::{CreateFilm, Film};
 

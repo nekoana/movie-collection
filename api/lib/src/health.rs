@@ -4,8 +4,8 @@ use axum::{
     extract::State,
     http::{HeaderMap, HeaderName, HeaderValue},
     response::IntoResponse,
-    Router,
     routing::get,
+    Router,
 };
 
 pub async fn hello_world() -> &'static str {
