@@ -11,6 +11,7 @@ use api_lib::{
     films::films_routers,
     health::{health_router, version},
 };
+use tower_http::cors::{Any, CorsLayer};
 use tower_http::services::ServeDir;
 
 async fn index() -> impl IntoResponse {
@@ -40,7 +41,8 @@ async fn axum(
         .route("/version", get(version))
         .with_state(pool.clone())
         .merge(root)
-        .nest_service("/assets", ServeDir::new(static_folder));
+        .nest_service("/assets", ServeDir::new(static_folder))
+        .layer(CorsLayer::new().allow_origin(Any).allow_methods(Any));
 
     Ok(router.into())
 }

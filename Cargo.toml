@@ -3,5 +3,6 @@ resolver = "2"
 members = [
     "api/lib",
     "api/shuttle",
-    "shared"
+    "shared",
+    "front/src-tauri",
 ]

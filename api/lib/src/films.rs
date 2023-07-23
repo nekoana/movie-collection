@@ -21,14 +21,29 @@ use crate::film_repository::FilmRepository;
 async fn list_films<R: FilmRepository>(
     Extension(repo): Extension<Arc<State<R>>>,
 ) -> impl IntoResponse {
-    Json(repo.list_films().await)
+    let films = repo.list_films().await;
+
+    match films {
+        Ok(films) => Json(films),
+        Err(e) => {
+            tracing::error!("Error: {:?}", e);
+            Json(vec![])
+        }
+    }
 }
 
 async fn query_film_by_id<R: FilmRepository>(
     repo: Extension<Arc<State<R>>>,
     id: Path<uuid::Uuid>,
 ) -> impl IntoResponse {
-    Json(repo.query_film_by_id(&id).await)
+    let film = repo.query_film_by_id(&id).await;
+    match film {
+        Ok(film) => Json(film),
+        Err(e) => {
+            tracing::error!("Error: {:?}", e);
+            Json(Film::default())
+        }
+    }
 }
 
 async fn create_film<R: FilmRepository>(
@@ -42,14 +57,29 @@ async fn update_film<R: FilmRepository>(
     repo: Extension<Arc<State<R>>>,
     Json(film): Json<Film>,
 ) -> impl IntoResponse {
-    Json(repo.update_film(&film).await)
+    let film = repo.update_film(&film).await;
+    match film {
+        Ok(film) => Json(film),
+        Err(e) => {
+            tracing::error!("Error: {:?}", e);
+            Json(Film::default())
+        }
+    }
 }
 
 async fn delete_film_by_id<R: FilmRepository>(
     repo: Extension<Arc<State<R>>>,
     id: Path<uuid::Uuid>,
 ) -> impl IntoResponse {
-    Json(repo.delete_film_by_id(&id).await)
+    let id = repo.delete_film_by_id(&id).await;
+
+    match id {
+        Ok(id) => Json(id),
+        Err(e) => {
+            tracing::error!("Error: {:?}", e);
+            Json(uuid::Uuid::default())
+        }
+    }
 }
 
 pub fn films_routers<R: FilmRepository + Send + Sync + 'static>(repo: State<R>) -> Router {
