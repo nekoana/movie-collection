@@ -1,4 +1,6 @@
-#[derive(serde::Serialize, serde::Deserialize, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(
+    serde::Serialize, serde::Deserialize, Default, Clone, Debug, PartialEq, Eq, PartialOrd, Ord,
+)]
 #[cfg_attr(feature = "backend", derive(sqlx::FromRow))]
 pub struct Film {
     pub id: uuid::Uuid,
