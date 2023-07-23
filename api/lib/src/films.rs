@@ -50,7 +50,14 @@ async fn create_film<R: FilmRepository>(
     repo: Extension<Arc<State<R>>>,
     Json(create_file): Json<CreateFilm>,
 ) -> impl IntoResponse {
-    Json(repo.create_film(&create_file).await)
+    let film = repo.create_film(&create_file).await;
+    match film {
+        Ok(film) => Json(film),
+        Err(e) => {
+            tracing::error!("Error:{:?}", e);
+            Json(Film::default())
+        }
+    }
 }
 
 async fn update_film<R: FilmRepository>(

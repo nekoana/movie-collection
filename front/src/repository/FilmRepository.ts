@@ -1,21 +1,7 @@
-const base_url = "http://127.0.0.1:8000/v1/films";
+const baseUrl = "http://127.0.0.1:8000/v1/films";
 
-interface CreateFilm {
-  title: string;
-  director: string;
-  year: number;
-  poster: string;
-}
-
-interface Film {
-  id: string;
-  title: string;
-  director: string;
-  year: number;
-  poster: string;
-  created_at: string;
-  updated_at: string;
-}
+import { type Film } from "../model/Film";
+import { type CreateFilm } from "../model/CreateFilm";
 
 interface IFilmRepository {
   list_films(): Promise<Film[]>;
@@ -33,7 +19,7 @@ class FilmRepository implements IFilmRepository {
   async list_films(): Promise<Film[]> {
     const response = await fetch(this.base_url, {
       method: "GET",
-      mode:"cors"
+      mode: "cors",
     });
     return await response.json();
   }
@@ -43,6 +29,7 @@ class FilmRepository implements IFilmRepository {
       headers: {
         "Content-Type": "application/json",
       },
+      mode: "cors",
       body: JSON.stringify(film),
     });
     return await response.json();
@@ -53,6 +40,7 @@ class FilmRepository implements IFilmRepository {
       headers: {
         "Content-Type": "application/json",
       },
+      mode: "cors",
       body: JSON.stringify(film),
     });
     return await response.json();
@@ -60,10 +48,10 @@ class FilmRepository implements IFilmRepository {
   async delete_film(id: string): Promise<string> {
     const response = await fetch(this.base_url + "/" + id, {
       method: "DELETE",
+      mode: "cors",
     });
     return await response.json();
   }
 }
 
-export { FilmRepository };
-export type { IFilmRepository, Film, CreateFilm };
+export const filmRepository = new FilmRepository(baseUrl);
