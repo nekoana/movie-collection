@@ -37,10 +37,10 @@ class FilmRepository implements IFilmRepository {
   async update_film(film: Film): Promise<Film> {
     const response = await fetch(this.base_url, {
       method: "PUT",
+      mode: "cors",
       headers: {
         "Content-Type": "application/json",
       },
-      mode: "cors",
       body: JSON.stringify(film),
     });
     return await response.json();

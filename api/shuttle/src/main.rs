@@ -42,7 +42,12 @@ async fn axum(
         .with_state(pool.clone())
         .merge(root)
         .nest_service("/assets", ServeDir::new(static_folder))
-        .layer(CorsLayer::new().allow_origin(Any).allow_methods(Any));
+        .layer(
+            CorsLayer::new()
+                .allow_origin(Any)
+                .allow_methods(Any)
+                .allow_headers(Any),
+        );
 
     Ok(router.into())
 }
