@@ -2,43 +2,43 @@ package component
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.Card
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.Density
+import androidx.compose.ui.res.loadImageBitmap
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.ktor.utils.io.errors.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.net.URL
-import androidx.compose.ui.res.loadImageBitmap
 import modal.Film
-import androidx.compose.material3.Card
-import androidx.compose.ui.text.style.TextOverflow
+import java.net.URL
 
 
 @Composable
-fun FilmCard(film:Film, modifier: Modifier = Modifier.size(180.dp, 280.dp)) {
+fun FilmCard(
+    film: Film,
+    onDelete: (Film) -> Unit,
+    onModify: (Film) -> Unit,
+    modifier: Modifier = Modifier.size(180.dp, 280.dp)
+) {
     Card(
         modifier = modifier
     ) {
@@ -58,20 +58,32 @@ fun FilmCard(film:Film, modifier: Modifier = Modifier.size(180.dp, 280.dp)) {
                     .size(160.dp, 200.dp)
                     .clip(RoundedCornerShape(8.dp)),
                 load = { loadImageBitmap(film.poster) },
+                default = rememberVectorPainter(Icons.Outlined.Info),
                 painterFor = {BitmapPainter(it) },
                 contentDescription = "Diamond SVG",
             )
 
             Text(
                 text = film.director,
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.body1,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
-            IconButton(
-                onClick = {
+            Row(
+                horizontalArrangement = Arrangement.End
+            ) {
+                IconButton(onClick = {
+                    onDelete(film)
+                }) {
+                    Icon(Icons.Filled.Delete, contentDescription = "delete")
+                }
 
-            }) {
-                Icon(Icons.Filled.Delete, contentDescription = "delete")
+                IconButton(onClick = {
+                    onModify(film)
+                }) {
+                    Icon(Icons.Filled.Edit, contentDescription = "edit")
+                }
             }
         }
     }
@@ -81,11 +93,13 @@ fun FilmCard(film:Film, modifier: Modifier = Modifier.size(180.dp, 280.dp)) {
 @Composable
 fun <T> AsyncImage(
     load: suspend () -> T,
+    default: Painter,
     painterFor: @Composable (T) -> Painter,
     contentDescription: String,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
 ) {
+
     val image: T? by produceState<T?>(null) {
         value = withContext(Dispatchers.IO) {
             try {
@@ -99,14 +113,18 @@ fun <T> AsyncImage(
         }
     }
 
-    if (image != null) {
-        Image(
-            painter = painterFor(image!!),
-            contentDescription = contentDescription,
-            contentScale = contentScale,
-            modifier = modifier
-        )
+    val sale by remember {
+        derivedStateOf {
+            if (image == null) ContentScale.Inside
+            else ContentScale.Crop
+        }
     }
+
+    Image(
+        painter = if (image != null) painterFor(image!!) else default,
+        contentDescription = contentDescription, contentScale = sale,
+        modifier = modifier
+    )
 }
 
 /* Loading from file with java.io API */
@@ -140,5 +158,19 @@ private suspend fun urlStream(url: String) = HttpClient(CIO).use {
 @Preview
 @Composable
 fun PreviewFilmCard() {
-    FilmCard(Film( "12345","title", "director", 123, "poster", "12/23","genre"))
+    FilmCard(Film(
+        "12345",
+        "title",
+        "director",
+        123,
+        "poster",
+        "12/23",
+        "genre"
+    ),
+        onDelete = {
+
+        },
+        onModify = {
+
+        })
 }
