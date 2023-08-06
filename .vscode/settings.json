@@ -1,0 +1,12 @@
+{
+    "rest-client.environmentVariables": {
+        "$shared": {
+            "schema":"http", 
+            "host":"127.0.0.1",
+            "port":"8000",
+        },
+        "local": {
+            "url":"{{$shared schema}}://{{$shared host}}:{{$shared port}}"
+        }
+    }
+}
